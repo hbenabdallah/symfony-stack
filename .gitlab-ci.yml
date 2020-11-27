@@ -1,0 +1,171 @@
+variables:
+    APP_ENV: "prod"
+    APP_DEBUG: "true"
+
+stages:
+    - Setup
+    - Check
+    - Tests
+
+#########
+# Setup #
+#########
+composer-dev:
+    stage: Setup
+    image: composer:1.10.17
+    script:
+        - composer update --optimize-autoloader --prefer-dist
+    tags:
+        - docker
+    artifacts:
+        expire_in: 1 hr
+        paths:
+            - vendor/
+    except:
+        - tags
+        - main
+
+composer-prod:
+    stage: Setup
+    image: composer:1.10.17
+    script:
+        - composer update --no-dev --optimize-autoloader --prefer-dist
+        # Missing PHP registry, remove .git sub directories to keep all vendors wih git export
+        - find vendor -type d -name .git -exec rm -rf {} \+
+    tags:
+        - docker
+    artifacts:
+        expire_in: 1 hr
+        paths:
+            - etc/doc/template/
+            - vendor/
+    only:
+        - tags
+        - main
+
+npm:
+    stage: Setup
+    image: node:10.15.3
+    script:
+        - cd etc/node
+        - npm prune
+        - npm install
+    tags:
+        - docker
+    cache:
+        paths:
+            - etc/node/node_modules/
+    artifacts:
+        expire_in: 1 hr
+        paths:
+            - etc/node/node_modules/
+
+#########
+# Check #
+#########
+check-yaml:
+    stage: Check
+    image: php:7.2-cli
+    script:
+        - php vendor/bin/grumphp run --no-ansi --no-interaction --testsuite=check-yaml
+    dependencies:
+        - composer-dev
+    tags:
+        - docker
+    except:
+        - tags
+        - main
+
+check-make:
+    stage: Check
+    image: php:7.2-cli
+    script:
+        - php vendor/bin/grumphp run --no-ansi --no-interaction --testsuite=check-make
+    dependencies:
+        - composer-dev
+    tags:
+        - docker
+    except:
+        - tags
+        - main
+
+check-git:
+    stage: Check
+    image: php:7.2-cli
+    script:
+        - php vendor/bin/grumphp run --no-ansi --no-interaction --testsuite=check-git
+    dependencies:
+        - composer-dev
+    tags:
+        - docker
+    except:
+        - tags
+        - main
+
+check-php-version:
+    stage: Check
+    image: php:7.4-cli
+    script:
+        - php vendor/bin/grumphp run --no-ansi --no-interaction --testsuite=check-php-version
+    dependencies:
+        - composer-dev
+    tags:
+        - docker
+    except:
+        - tags
+        - main
+
+check-php:
+    stage: Check
+    image: php:7.4-cli
+    script:
+        - php vendor/bin/grumphp run --no-ansi --no-interaction --testsuite=check-php
+    dependencies:
+        - composer-dev
+    tags:
+        - docker
+    except:
+        - tags
+        - main
+
+check-php-cpd:
+    stage: Check
+    image: php:7.4-cli
+    script:
+        - php vendor/bin/grumphp run --no-ansi --no-interaction --testsuite=check-php-cpd
+    dependencies:
+        - composer-dev
+    tags:
+        - docker
+    except:
+        - tags
+        - main
+
+check-php-cs:
+    stage: Check
+    image: php:7.4-cli
+    script:
+        - php vendor/bin/grumphp run --no-ansi --no-interaction --testsuite=check-php-cs
+    dependencies:
+        - composer-dev
+    tags:
+        - docker
+    except:
+        - tags
+        - main
+
+#########
+# Tests #
+#########
+units-tests:
+    stage: Tests
+    image: php:7.4-cli
+    script:
+        - php vendor/bin/grumphp run --no-ansi --no-interaction --testsuite=units-tests
+    dependencies:
+        - composer-dev
+    tags:
+        - docker
+    except:
+        - tags
+        - main

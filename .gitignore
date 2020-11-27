@@ -1,0 +1,42 @@
+/.env
+/.gitconfig
+/.install
+!.gitkeep
+/var/cache/*
+/var/log/*
+/var/data/*
+/var/data/mysql/*
+!var/cache/.gitkeep
+!var/log/.gitkeep
+!var/data/.gitkeep
+!var/data/mysql/.gitkeep
+public/build
+!public/build/.gitkeep
+node_modules
+package-lock.json
+/vendor/
+!/tests/functionals/build/.gitkeep
+/tests/functionals/build/*
+newman.json
+
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+###< symfony/framework-bundle ###
+
+###> symfony/phpunit-bridge ###
+.phpunit
+###< symfony/phpunit-bridge ###
+
+###> friendsofphp/php-cs-fixer ###
+/.php_cs
+/.php_cs.cache
+###< friendsofphp/php-cs-fixer ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###

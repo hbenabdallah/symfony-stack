@@ -1,0 +1,3 @@
+parameters:
+    mail_from: '%env(MAILER_FROM)%'
+    mail_subject: '%env(MAILER_SUBJECT)%'

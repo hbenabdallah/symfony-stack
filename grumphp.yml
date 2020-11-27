@@ -1,0 +1,112 @@
+# grumphp.yml
+grumphp:
+    hooks_dir: ~
+    hooks_preset: local
+    ignore_unstaged_changes: true
+    stop_on_failure: true
+    hide_circumvention_tip: false
+    process_timeout: 1000
+    additional_info: ~
+    ascii:
+        failed: ~
+        succeeded: ~
+    parallel:
+        enabled: true
+        max_workers: 32
+    fixer:
+        enabled: true
+        fix_by_default: false
+    environment:
+        files: [ ]
+        variables: { }
+        paths: [ ]
+
+    tasks:
+        yamllint:
+            object_support: false
+            exception_on_invalid_type: false
+
+        phplint:
+            exclude: [vendor]
+            jobs: ~
+
+        phpcs:
+            standard: [PSR1, PSR2]
+            encoding: "UTF-8"
+            triggered_by: [php]
+            warning_severity: 0
+            whitelist_patterns:
+                - /^src\/(.*)/
+
+        phpversion:
+            project: '7.2'
+
+        phpcpd:
+            directory: ['.']
+            exclude: ['vendor', 'etc', 'bin', 'var', '.ssh']
+            fuzzy: false
+            min_lines: 5
+            min_tokens: 70
+            triggered_by: ['php']
+
+        securitychecker: ~
+
+        phpunit: ~
+
+        git_branch_name:
+            whitelist:
+                - /^([0-9]+.[0-9]+.[0-9]+)|^(master)|^(main)|^(feature|doc|fix|hotfix)\/([a-z-\-]+)/
+            additional_modifiers: ''
+
+        make:
+            make_file: ~
+            task: ~
+            triggered_by: [php]
+
+    testsuites:
+        check-php:
+            tasks:
+                - phplint
+
+        check-php-version:
+            tasks:
+                - phpversion
+
+        check-php-cpd:
+            tasks:
+                - phpcpd
+
+        check-php-cs:
+            tasks:
+                - phpcs
+
+        check-yaml:
+            tasks:
+                - yamllint
+
+        check-git:
+            tasks:
+                - git_branch_name
+
+        check-make:
+            tasks:
+                - make
+
+        check-security:
+            tasks:
+                - securitychecker
+
+        units-tests:
+            tasks:
+                - phpunit
+
+        check-all:
+            tasks:
+                - phplint
+                - phpversion
+                - phpcpd
+                - phpcs
+                - yamllint
+                - git_branch_name
+                - make
+                - securitychecker

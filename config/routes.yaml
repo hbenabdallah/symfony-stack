@@ -1,0 +1,2 @@
+app_stack:
+    resource: "../src/Resources/config/routes.yaml"
